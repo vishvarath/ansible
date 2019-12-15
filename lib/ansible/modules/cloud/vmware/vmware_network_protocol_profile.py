@@ -6,8 +6,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-#from typing import Optional, Any
-
 __metaclass__ = type
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
@@ -20,13 +18,34 @@ module: vmware_network_protocol_profile
 short_description: create/remove network_protocol_profile to/from vCenter
 description:
     - This module can be used to add/remove an IP Pool to/from vCenter
+version_added: 2.10
 author:
-- Vishvarath Nayak
+- Vishvarath Nayak (@vishvarath)
 notes:
-
+    - Tested on vSphere 6.0 and 6.5
+    -This module only help to create and delete network protocol profile.
 requirements:
-    - "python >= 2.6"
+    - "python >= 2.7"
     - PyVmomi
+options:
+    state:
+        description:
+            - Determines if the portgroup should be present or not.
+        choices:
+            - 'present'
+            - 'absent'
+        version_added: '2.10'
+        default: present
+        type: str
+    state:
+        description:
+            - Determines if the portgroup should be present or not.
+        choices:
+            - 'present'
+            - 'absent'
+        version_added: '2.10'
+        default: present
+        type: str
 '''
 
 EXAMPLES = '''
@@ -57,6 +76,8 @@ EXAMPLES = '''
     password: '{{ vcenter_password }}'
     datacenter: '{{ datacenter_name }}'
     ip_pool: '{{ ip_pool_name }}'
+    state: absent
+  delegate_to: localhost
 '''
 
 RETURN = """
@@ -216,19 +237,19 @@ def main():
     argument_spec = vmware_argument_spec()
     argument_spec.update(dict(
         datacenter=dict(required=True, type='str'),
-	validate_certs=dict(required=False, type='bool'),
+	    validate_certs=dict(required=False, type='bool'),
         dvswitch=dict(required=True, type='str'),
         network=dict(required=True, type='str'),
         ip_pool=dict(required=True, type='str'),
         gateway=dict(type='str'),
-        ipPoolEnabled=dict(type='bool', default="True"),
-        dhcpServerAvailable=dict(type='bool', default="True"),
+        ipPoolEnabled=dict(type='bool', default="False"),
+        dhcpServerAvailable=dict(type='bool', default="False"),
         dns=dict(type='list'),
         subnetAddress=dict(type='str'),
-        netmask=dict(type='str', default="255.255.255.0"),
+        netmask=dict(type='str'),
         dnsDomain=dict(type='str'),
         dnsSearchPath=dict(type='str'),
-        state=dict(default='present', choices=['present', 'absent'], type='str')))
+        state=dict(type='str', choices=['present', 'absent'], default='present')))
 
     module = AnsibleModule(argument_spec=argument_spec,
                            supports_check_mode=True)
