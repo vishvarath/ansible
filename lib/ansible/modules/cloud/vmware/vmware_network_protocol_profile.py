@@ -21,12 +21,16 @@ short_description: create/remove network_protocol_profile to/from vCenter
 description:
     - This module can be used to add/remove an IP Pool to/from vCenter
 author:
-- Vishvarath Nayak
+- Vishvarath Nayak (@vishvarath)
 notes:
+   - Tested on both 6.0 and 6.5.
+   - only support IPv4.
 
 requirements:
-    - "python >= 2.6"
+    - "python >= 2.7"
     - PyVmomi
+options:
+
 '''
 
 EXAMPLES = '''
