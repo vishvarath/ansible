@@ -69,7 +69,7 @@ EXAMPLES = '''
     state: present
   delegate_to: localhost
 
-- name : Delete network protocol profile to vCenter
+- name : Delete netwgork protocol profile to vCenter
   vmware_network_protocol_profile:
     hostname: '{{ vcenter_hostname }}'
     username: '{{ vcenter_username }}'
