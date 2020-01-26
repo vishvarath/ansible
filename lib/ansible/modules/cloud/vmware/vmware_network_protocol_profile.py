@@ -28,22 +28,83 @@ requirements:
     - "python >= 2.7"
     - PyVmomi
 options:
-    state:
+    datacenter:
         description:
-            - Determines if the portgroup should be present or not.
-        choices:
-            - 'present'
-            - 'absent'
-        version_added: '2.10'
-        default: present
+            - Name of the datacenter to add the host.
+        required: True
         type: str
+    dvswitch:
+        description:
+            - Name of the distributed virtual switch, which will associate with network protocol profile.
+        required: True
+        type: str
+
+    network:
+        description:
+            - Name of the distributed portgroup, Virtual appliance will be connected to this network.
+        required: True
+        type: str
+
+    ip_pool:
+        description:
+            - Name of network protocol profile to manage.
+        required: True
+        type: str
+
+    gateway:
+        description:
+            - Gateway address (IPv4) to assign to IP pool.
+        required: False
+        type: str
+
+    ipPoolEnabled:
+        description:
+            - Determine whether IP pool sould be enabled or not. please use option (True, False)
+        required: False
+        type: bool
+
+    dhcpServerAvailable:
+        description:
+            - Name of network protocol profile.
+        required: False
+        type: bool
+
+    dns:
+        description:
+            - Name of network protocol profile.
+        required: False
+        type: list
+
+    subnetAddress:
+        description:
+            - Name of network protocol profile.
+        required: False
+        type: str
+
+    netmask:
+        description:
+            - Name of network protocol profile.
+        required: True
+        type: str
+
+    dnsDomain:
+        description:
+            - Name of network protocol profile.
+        required: True
+        type: str
+
+    dnsSearchPath:
+        description:
+            - Name of network protocol profile.
+        required: True
+        type: str
+
     state:
         description:
-            - Determines if the portgroup should be present or not.
+            - Determines if the network protocol profile should be present or not.
         choices:
             - 'present'
             - 'absent'
-        version_added: '2.10'
         default: present
         type: str
 '''
