@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright: (c) 2019, Vishvarath Nayak vishvarath@gmail.com
+# Copyright: (c) 2019, Vishvarath Nayak <vishvarath@gmail.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: vmware_network_protocol_profile
-short_description: create/remove network_protocol_profile to/from vCenter
+short_description: create, remove network_protocol_profile to and from vCenter
 description:
-    - This module can be used to add/remove an IP Pool to/from vCenter
+    - This module can be used to create, remove network_protocol_profile to and from vCenter
 version_added: 2.10
 author:
 - Vishvarath Nayak (@vishvarath)
@@ -65,37 +65,37 @@ options:
 
     dhcpServerAvailable:
         description:
-            - Name of network protocol profile.
+            - Determin whether DHCP server should be enabled or not. please use option (True, False)
         required: False
         type: bool
 
     dns:
         description:
-            - Name of network protocol profile.
+            - List of DNS server configured for IP Pool.
         required: False
         type: list
 
     subnetAddress:
         description:
-            - Name of network protocol profile.
+            - Subnet Address (IPv4) to assign to IP pool.
         required: False
         type: str
 
     netmask:
         description:
-            - Name of network protocol profile.
+            - Netmask (IPv4) to assign to IP pool.
         required: True
         type: str
 
     dnsDomain:
         description:
-            - Name of network protocol profile.
+            - Domain name to be specicy for DNs.
         required: True
         type: str
 
     dnsSearchPath:
         description:
-            - Name of network protocol profile.
+            - specify DNS Search path if it is defferent than DNS Domain.
         required: True
         type: str
 
@@ -155,11 +155,11 @@ try:
 except ImportError:
     HAS_PYVMOMI = False
 
-from ansible.module_utils.vmware import get_all_objs, connect_to_api, vmware_argument_spec, find_datacenter_by_name, find_dvs_by_name, find_dvspg_by_name
+from ansible.module_utils.vmware import PyVmomi, get_all_objs, vmware_argument_spec, find_datacenter_by_name, find_dvs_by_name, find_dvspg_by_name
 from ansible.module_utils.basic import AnsibleModule
 
 
-class vmware_network_protocol_profile(object):
+class vmware_network_protocol_profile(Pyvmomi):
 
     def __init__(self, module):
         self.module = module
@@ -235,7 +235,7 @@ class vmware_network_protocol_profile(object):
         except vmodl.MethodFault as method_fault:
             self.module.fail_json(msg=method_fault.msg)
         except Exception as e:
-            self.module.fail_json(msg=str(e))
+            self.module.fail_json(msg=to_native(e))
 
     def state_exit_unchanged(self):
         self.module.exit_json(changed=False)
@@ -258,9 +258,9 @@ class vmware_network_protocol_profile(object):
             self.module.fail_json(msg="Unable to find distributed switch with name %s" % self.dvswitch)
         self.dvsportgrp_obj = find_dvspg_by_name(self.dvswitch_obj, self.network)
 
-        IpPool_assoc = vim.vApp.IpPool.Association()
-        IpPool_assoc.network = self.dvsportgrp_obj
-        IpPool_assoc.networkName = self.network
+        ip_pool_assoc = vim.vApp.IpPool.Association()
+        ip_pool_assoc.network = self.dvsportgrp_obj
+        ip_pool_assoc.networkName = self.network
 
         IpPool_config = vim.vApp.IpPool.IpPoolConfigInfo()
         IpPool_config.dhcpServerAvailable = self.dhcpserverAvailable
@@ -270,14 +270,14 @@ class vmware_network_protocol_profile(object):
         IpPool_config.subnetAddress = self.subnetAddress
         IpPool_config.netmask = self.netmask
 
-        IpPool_data = vim.vApp.IpPool()
-        IpPool_data.name = self.ip_pool
-        IpPool_data.ipv4Config = IpPool_config
-        IpPool_data.dnsDomain = self.dnsDomain
-        IpPool_data.dnsSearchPath = self.dnsSearchPath
-        IpPool_data.networkAssociation = [IpPool_assoc]
+        ip_pool_data = vim.vApp.IpPool()
+        ip_pool_data.name = self.ip_pool
+        ip_pool_data.ipv4Config = IpPool_config
+        ip_pool_data.dnsDomain = self.dnsDomain
+        ip_pool_data.dnsSearchPath = self.dnsSearchPath
+        ip_pool_data.networkAssociation = [ip_pool_assoc]
 
-        self.content.ipPoolManager.CreateIpPool(self.dc_obj, IpPool_data)
+        self.content.ipPoolManager.CreateIpPool(self.dc_obj, ip_pool_data)
 
         self.module.exit_json(changed=changed)
 
