@@ -22,7 +22,7 @@ version_added: 2.10
 author:
 - Vishvarath Nayak (@vishvarath)
 notes:
-    - Tested on vSphere 6.0 and 6.5
+    - Tested on vSphere 6.5 and 6.7
     -This module only help to create and delete network protocol profile.
 requirements:
     - "python >= 2.7"
